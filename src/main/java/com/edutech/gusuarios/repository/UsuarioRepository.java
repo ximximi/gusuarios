@@ -12,6 +12,7 @@ import com.edutech.gusuarios.model.Usuario;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
+    @Override
     List<Usuario> findAll();
     
     Optional<Usuario> findByRut(String rut);

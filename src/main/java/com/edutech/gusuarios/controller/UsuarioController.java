@@ -58,7 +58,15 @@ public class UsuarioController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Usuario> getUsuarioByEmail(@PathVariable String email) {
+        Optional<Usuario> usuarioData = usuarioService.findByEmail(email);
+        if (usuarioData.isPresent()) {
+            return new ResponseEntity<>(usuarioData.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
     @GetMapping("/username/{username}")
     public ResponseEntity<Usuario> getUsuarioByUsername(@PathVariable String username) {
         Optional<Usuario> usuarioData = usuarioService.findByUsername(username);

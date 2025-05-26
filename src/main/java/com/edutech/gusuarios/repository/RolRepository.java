@@ -12,6 +12,7 @@ import com.edutech.gusuarios.model.Rol;
 @Repository
 public interface RolRepository extends JpaRepository<Rol, Long> {
     
+    @Override
     List<Rol> findAll();
     
     Optional<Rol> findByNombre(String nombre);

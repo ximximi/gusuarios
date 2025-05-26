@@ -5,8 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
+import com.edutech.gusuarios.dto.UsuarioRegistroDTO;
 import com.edutech.gusuarios.model.EstadoUsuario;
 import com.edutech.gusuarios.model.Rol;
 import com.edutech.gusuarios.model.Usuario;
@@ -17,6 +23,33 @@ import com.edutech.gusuarios.repository.UsuarioRepository;
 public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
+// Dentro de la clase UsuarioService en ms-gusuarios
+
+    public UsuarioRegistroDTO obtenerRegistroPorCorreo(String correo) {
+    String urlMsRegistro = "http://localhost:8081/api/usuarios/buscar/" + correo;
+
+    try {
+        ResponseEntity<UsuarioRegistroDTO> response =
+                restTemplate.getForEntity(urlMsRegistro, UsuarioRegistroDTO.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            System.err.println("Respuesta no OK de REGISTRO: " + response.getStatusCode());
+            return null;
+        }
+    } catch (HttpClientErrorException.NotFound ex) {
+        System.err.println("Usuario con correo '" + correo + "' no encontrado en ms-registro.");
+        return null; // El usuario no existe en el servicio de registro
+    } catch (RestClientException ex) {
+        // Error de conexión, timeout, o el servicio de registro no está disponible
+        System.err.println("Error al llamar a ms-registro: " + ex.getMessage());
+        return null;
+    }
+}
 
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
